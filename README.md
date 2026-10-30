@@ -29,8 +29,73 @@ STEP-7: The junction character where these two meet forms the cipher character.
 STEP-8: Repeat the above steps to generate the entire cipher text.
 
 
-## PROGRAM
+## PROGRAM:
+     #include <ctype.h>
+     #include <stdio.h>
+     #include <string.h>
+
+     int main(void)
+    {
+    char plaintext[500];
+    char keyword[100];
+    char ciphertext[500];
+    size_t keyLength;
+    size_t keyIndex = 0;
+
+    printf("Enter the plaintext: ");
+    if (fgets(plaintext, sizeof(plaintext), stdin) == NULL)
+        return 1;
+
+    plaintext[strcspn(plaintext, "\n")] = '\0';
+
+    printf("Enter the keyword: ");
+    if (fgets(keyword, sizeof(keyword), stdin) == NULL)
+        return 1;
+
+    keyword[strcspn(keyword, "\n")] = '\0';
+    keyLength = strlen(keyword);
+
+    if (keyLength == 0) {
+        printf("Keyword cannot be empty.\n");
+        return 1;
+    }
+
+    /* Check that the keyword contains only letters. */
+    for (size_t i = 0; i < keyLength; i++) {
+        if (!isalpha((unsigned char)keyword[i])) {
+            printf("Keyword must contain only letters.\n");
+            return 1;
+        }
+        keyword[i] = (char)toupper((unsigned char)keyword[i]);
+    }
+
+    for (size_t i = 0; plaintext[i] != '\0'; i++) {
+        unsigned char ch = (unsigned char)plaintext[i];
+
+        if (isalpha(ch)) {
+            int plainValue = toupper(ch) - 'A';
+            int keyValue = keyword[keyIndex % keyLength] - 'A';
+            int cipherValue = (plainValue + keyValue) % 26;
+
+            ciphertext[i] = (char)('A' + cipherValue);
+            keyIndex++;
+        } else {
+            /* Keep spaces and punctuation; they do not use a key letter. */
+            ciphertext[i] = (char)ch;
+        }
+    }
+
+    ciphertext[strlen(plaintext)] = '\0';
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
 
 ## OUTPUT
+<img width="300" height="77" alt="Screenshot 2026-10-30 122316" src="https://github.com/user-attachments/assets/41f39da1-8af6-43dd-b016-569aa9d22606" />
 
-## RESULT
+
+## RESULT:
+The Vigenere cipher program was implemented and executed successfully. The plaintext was encrypted using the
+keyword, and the ciphertext was displayed.
